@@ -1,0 +1,50 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+
+sourceCompatibility=1.8
+version='1.0'
+
+ext {
+    mainClass='HelloWorld'
+    junitVersion="4.12"
+    log4jVersion="1.2.17"
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': mainClass,
+                   'Implementation-Title': 'Hello world',
+                   'Implementation-Version': version,
+                   'Implementation-Vendor': "ecybrain.com",
+                   'Build-Date': new Date().getDateTimeString(),
+                   'Build-With': "gradle-${project.getGradle().getGradleVersion()}, groovy-${GroovySystem.getVersion()}, log4j-${log4jVersion}, junit-${junitVersion}",
+                   'Created-By':'Java ' + System.getProperty('java.version') +' (' + System.getProperty('java.vendor') +')'
+    }
+}
+
+repositories {
+    mavenCentral()
+
+    maven {
+        url "https://repo1.maven.org/maven2/"
+    }
+}
+
+dependencies {
+
+    compile (
+        "log4j:log4j:${log4jVersion}"
+    )
+
+    testCompile (
+        "junit:junit:${junitVersion}"
+    )
+
+}
+
+task execute(type:JavaExec) {
+    main = mainClass
+    classpath = sourceSets.main.runtimeClasspath
+}
+      
