@@ -1,14 +1,36 @@
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
+apply plugin: 'checkstyle'
 
 sourceCompatibility=1.8
 version='1.0'
 
+configurations {
+    checkstyleConfig
+}
+
+def versions = [
+    checkstyle: '6.2',
+    junit: '4.12',
+    log4j: '1.2.17',
+]
+
+dependencies {
+    checkstyleConfig('com.puppycrawl.tools:checkstyle:6.2') {
+        transitive = false
+    }
+}
+
+checkstyle {
+    showViolations = true
+    sourceSets = [sourceSets.main]
+    toolVersion = "${versions.checkstyle}"
+    config = resources.text.fromArchiveEntry(configurations.checkstyleConfig, 'google_checks.xml')
+}
+                  
 ext {
     mainClass='HelloWorld'
-    junitVersion="4.12"
-    log4jVersion="1.2.17"
 }
 
 jar {
@@ -18,7 +40,7 @@ jar {
                    'Implementation-Version': version,
                    'Implementation-Vendor': "ecybrain.com",
                    'Build-Date': new Date().getDateTimeString(),
-                   'Build-With': "gradle-${project.getGradle().getGradleVersion()}, groovy-${GroovySystem.getVersion()}, log4j-${log4jVersion}, junit-${junitVersion}",
+                   'Build-With': "gradle-${project.getGradle().getGradleVersion()}, groovy-${GroovySystem.getVersion()}, log4j-${versions.log4j}, junit-${versions.junit}",
                    'Created-By':'Java ' + System.getProperty('java.version') +' (' + System.getProperty('java.vendor') +')'
     }
 }
@@ -34,11 +56,11 @@ repositories {
 dependencies {
 
     compile (
-        "log4j:log4j:${log4jVersion}"
+        "log4j:log4j:${versions.log4j}"
     )
 
     testCompile (
-        "junit:junit:${junitVersion}"
+        "junit:junit:${versions.junit}"
     )
 
 }
@@ -47,4 +69,3 @@ task execute(type:JavaExec) {
     main = mainClass
     classpath = sourceSets.main.runtimeClasspath
 }
-      
